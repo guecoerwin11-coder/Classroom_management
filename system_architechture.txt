@@ -1,0 +1,23 @@
+Class Management 
+
+instrutor => {
+    can add subject
+    enroll the student to the subject
+    filter student each subject
+    create a section for student
+    drop student
+}
+
+subject => {
+    can have many student per section
+}
+
+student => {
+    enroll or register student
+    apply to the instructor
+    access to the subject
+    find section
+    filter classroom classmate
+    drop subject
+}
+
