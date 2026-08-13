@@ -15,4 +15,4 @@ const isTeacher = async (req, res, next) => {
     }
 }
 
-modele.exports = isTeacher;
+module.exports = isTeacher;
