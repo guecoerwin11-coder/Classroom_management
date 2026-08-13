@@ -47,7 +47,29 @@ const getSubject = async (req, res)=> {
     }
 }
 
+const getAllSubjects  = async (req, res) => {
+    try{
+
+        const subjects = await primsa.subject.findMany({
+            select: {
+                id: true,
+                userId: true,
+                subject_name: true,
+            }
+        })
+
+        res.status(200).json({
+            message: 'all sections available',
+            data: subjects
+        })
+    }catch(err){
+        res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
 
 module.exports = {
-    createSubject, getSubject
+    createSubject, getSubject, getAllSubjects
 }
