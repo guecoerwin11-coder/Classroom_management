@@ -4,12 +4,15 @@ const createSubject = async (req, res) => {
     try{
 
         const userId = req.user.id
-        const {subjectName} = req.body;
+        const {subjectName, sectionId} = req.body;
 
         const subject = await prisma.subject.create({
             data: {
                 userId: userId,
-                subject_name: subjectName
+                subject_name: subjectName,
+                section: {
+                    connect: { id: Number(sectionId)}
+                }
             }
         })
 

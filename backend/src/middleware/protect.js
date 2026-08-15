@@ -5,7 +5,7 @@ const protect = (req, res,next)=> {
 
         const authHead = req.headers.authorization;
 
-        if(!auth){
+        if(!authHead){
             return res.status(403).json({
                 message: 'Invalid token!'
             })
