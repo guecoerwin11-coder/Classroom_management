@@ -50,15 +50,17 @@ const getSection = async (req, res) => {
 
         const section = await prisma.section.findUnique({
             where: {
-                id: sectionId
-            },
-            select: {
-                name: true
-            },
-            include: {
-                students: true
+                id: parseInt(sectionId)
             }
         })
+
+        if(!section){
+            return res.status(404).json({
+                message: 'not section existed'
+            })
+        }
+
+        res.status(200).json(section)
     }catch(err){
         res.status(500).json({
             message: err.message

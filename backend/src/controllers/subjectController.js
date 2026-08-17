@@ -11,7 +11,7 @@ const createSubject = async (req, res) => {
                 userId: userId,
                 subject_name: subjectName,
                 section: {
-                    connect: { id: Number(sectionId)}
+                    connect: { id: parseInt(sectionId)}
                 }
             }
         })
@@ -53,7 +53,7 @@ const getSubject = async (req, res)=> {
 const getAllSubjects  = async (req, res) => {
     try{
 
-        const subjects = await primsa.subject.findMany({
+        const subjects = await prisma.subject.findMany({
             select: {
                 id: true,
                 userId: true,
@@ -62,7 +62,7 @@ const getAllSubjects  = async (req, res) => {
         })
 
         res.status(200).json({
-            message: 'all sections available',
+            message: 'all subjects available',
             data: subjects
         })
     }catch(err){

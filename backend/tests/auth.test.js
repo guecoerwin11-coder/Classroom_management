@@ -33,11 +33,14 @@ describe("Auth API Endpoints", () => {
                 "password":"winwin"
             });
 
+            //output 
             expect(res.statusCode).toBe(201);
             expect(res.body).toHaveProperty('token')
     })
 
+    //testing if the email is already registered
     it('should error if the email is already registered', async () => {
+        //register tetsing account
         await request(app)
         .post('/api/auth/register')
         .send({
@@ -48,6 +51,7 @@ describe("Auth API Endpoints", () => {
                 "password":"ronamae"
         })
 
+        //try register again and since it was already saved
         const res = await request(app)
             .post('/api/auth/register')
             .send({
@@ -62,7 +66,9 @@ describe("Auth API Endpoints", () => {
         expect(res.body).toHaveProperty('message','Email is already Exist')
     })
 
+    //check if the email is not register
     it('should the email is to register first', async () =>{
+        //try login-In and the email si not ergister 
         const res = await request(app)
             .post('/api/auth/login')
             .send({
@@ -74,7 +80,9 @@ describe("Auth API Endpoints", () => {
         expect(res.body).toHaveProperty('message','email is not register')
     })
 
+    //test if a successful login
     it('should login success the API', async () => {
+        //register first sample account
         await request(app)
             .post('/api/auth/register')
             .send({
@@ -85,6 +93,7 @@ describe("Auth API Endpoints", () => {
                 "password":"ronamae"
             })
         
+            //login here again
         const res = await request(app)
             .post('/api/auth/login')
             .send({

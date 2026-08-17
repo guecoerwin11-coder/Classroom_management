@@ -38,7 +38,7 @@ const enrollStudent = async (req, res)=> {
         const isEnroll = await prisma.sectionStudent.findUnique({
             where: {
                 sectionId_studentId: {
-                    sectionId: sectionId,
+                    sectionId: parseInt(sectionId),
                     studentId: studentId
                 }
             }
@@ -51,7 +51,7 @@ const enrollStudent = async (req, res)=> {
             })
         }
 
-        const newEnroll = await prisma.sectionStudent({
+        const newEnroll = await prisma.sectionStudent.create({
             data: {
                 sectionId: parseInt(sectionId),
                 studentId: studentId //id from mongo database
