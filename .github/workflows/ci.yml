@@ -6,10 +6,6 @@ on:
   pull_request: 
     branches: [ main ]
 
-defaults:
-  run:
-    working-directory: backend
-
 jobs:
   test-and-validate:
     runs-on: ubuntu-latest
@@ -22,7 +18,7 @@ jobs:
           POSTGRES_PASSWORD: password
           POSTGRES_DB: classroom_test
         ports:
-          - 5432:5432 # 💡 FIXED: Added missing list hyphen (-)
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -38,6 +34,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 💻 Note the addition of 'working-directory: backend' on all terminal tasks below
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -46,17 +43,21 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install Project Dependencies
+        working-directory: backend
         run: npm install
 
       - name: Generate Prisma Client
+        working-directory: backend
         run: npx prisma generate
       
       - name: Run Prisma Database Migrations
+        working-directory: backend
         run: npx prisma migrate dev --name init
         env:
           DATABASE_URL: "postgresql://postgres:password@localhost:5432/classroom_test"
       
       - name: Execute Automated SuperTest Suite
+        working-directory: backend
         run: npm test
         env:
           MONGO_URI_TEST: "mongodb://localhost:27017/classroom_management_test"
@@ -66,8 +67,9 @@ jobs:
     needs: test-and-validate
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    # 💡 FIXED: Indented steps properly under the deployment job block
+    
     steps:
+      # 🟢 Clean execution layer: This steps out of the backend restriction safely!
       - name: Deploying Live
         run: |
           echo "🚀 Testing passed! Your Lego castle is 100% stable and sending to production!"
