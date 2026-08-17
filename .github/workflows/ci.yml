@@ -1,0 +1,73 @@
+name: Classroom Management CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request: 
+    branches: [ main ]
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres-db:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: classroom_test
+        ports:
+          - 5432:5432 # 💡 FIXED: Added missing list hyphen (-)
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      mongo-db:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Project Dependencies
+        run: npm install
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+      
+      - name: Run Prisma Database Migrations
+        run: npx prisma migrate dev --name init
+        env:
+          DATABASE_URL: "postgresql://postgres:password@localhost:5432/classroom_test"
+      
+      - name: Execute Automated SuperTest Suite
+        run: npm test
+        env:
+          MONGO_URI_TEST: "mongodb://localhost:27017/classroom_management_test"
+          DATABASE_URL: "postgresql://postgres:password@localhost:5432/classroom_test"
+
+  deploy-to-production:
+    needs: test-and-validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    # 💡 FIXED: Indented steps properly under the deployment job block
+    steps:
+      - name: Deploying Live
+        run: |
+          echo "🚀 Testing passed! Your Lego castle is 100% stable and sending to production!"
